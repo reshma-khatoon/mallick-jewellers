@@ -1,0 +1,12 @@
+{
+  "name": "mallick-jewellers",
+  "version": "1.0.0",
+  "description": "A jewellery shop website with frontend and backend order submission.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.4"
+  }
+}
