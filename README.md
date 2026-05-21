@@ -70,7 +70,12 @@ This project is a jewellery store website with a frontend landing page and a Nod
 
 Create a `.env` file in the project root and fill in your SMTP settings using the `.env.example` template.
 
-Required values:
+Email is optional by default:
+
+- `ENABLE_EMAIL=false` disables email delivery and keeps the site working normally
+- `ENABLE_EMAIL=true` enables email notifications and requires SMTP settings
+
+Required values when `ENABLE_EMAIL=true`:
 
 - `SMTP_HOST`
 - `SMTP_PORT`

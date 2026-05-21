@@ -8,6 +8,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const {
+  ENABLE_EMAIL,
   SMTP_HOST,
   SMTP_PORT,
   SMTP_USER,
@@ -15,10 +16,11 @@ const {
   EMAIL_TO,
 } = process.env;
 
-const emailConfigured = SMTP_HOST && SMTP_PORT && SMTP_USER && SMTP_PASS && EMAIL_TO;
+const emailEnabled = ENABLE_EMAIL === 'true';
+const emailConfigured = emailEnabled && SMTP_HOST && SMTP_PORT && SMTP_USER && SMTP_PASS && EMAIL_TO;
 let transporter;
 
-if (emailConfigured) {
+if (emailEnabled && emailConfigured) {
   transporter = nodemailer.createTransport({
     host: SMTP_HOST,
     port: Number(SMTP_PORT),
@@ -66,7 +68,12 @@ app.post('/order', async (req, res) => {
   console.log('New order request:', orderRequest);
   writeOrderLog(orderRequest);
 
-  if (emailConfigured) {
+  if (emailEnabled) {
+    if (!emailConfigured) {
+      console.error('Email enabled but SMTP settings are incomplete.');
+      return res.status(500).json({ message: 'Email notification setup is incomplete. Please configure SMTP settings or disable email notifications.' });
+    }
+
     try {
       await transporter.sendMail({
         from: `"Mallick Jewellers" <${SMTP_USER}>`,
@@ -80,7 +87,7 @@ app.post('/order', async (req, res) => {
       return res.status(500).json({ message: 'Unable to complete your request right now. Please try again later.' });
     }
   } else {
-    console.warn('Email is not configured. Order request is logged only.');
+    console.warn('Email notifications are disabled. Order request is logged only.');
   }
 
   return res.json({ message: 'Thank you! Your order request has been received successfully.' });
