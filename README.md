@@ -8,6 +8,7 @@ This project is a jewellery store website with a frontend landing page and a Nod
 - Contact form that submits to a backend `/order` endpoint
 - Instagram link: https://www.instagram.com/mallickjewellers_designers/
 - Mobile-friendly navigation and gallery section
+- Node.js backend available for order processing and future email/database integrations
 
 ## Run locally
 
@@ -65,7 +66,19 @@ This project is a jewellery store website with a frontend landing page and a Nod
    ```
 4. Railway will handle the deployment.
 
+## Environment variables
+
+Create a `.env` file in the project root and fill in your SMTP settings using the `.env.example` template.
+
+Required values:
+
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `EMAIL_TO`
+
 ## Notes
 
-- The backend currently logs order requests to the console.
-- For email notifications or database storage, additional backend setup is needed.
+- The backend logs order requests to the console and saves requests to `orders.log`.
+- If SMTP is configured, order requests are also sent by email.
