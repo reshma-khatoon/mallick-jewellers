@@ -29,13 +29,45 @@ const buildEmailBody = (orderRequest) => {
   return `New order request received:\n\nName: ${orderRequest.name}\nEmail: ${orderRequest.email}\nPhone: ${orderRequest.phone}\nInterested In: ${orderRequest.interest}\nMessage:\n${orderRequest.message}\n\nReceived at: ${orderRequest.receivedAt}`;
 };
 
+const parseRequestPayload = async (req) => {
+  if (req.body && typeof req.body === 'object' && !Array.isArray(req.body)) {
+    return req.body;
+  }
+
+  if (typeof req.body === 'string' && req.body.trim()) {
+    try {
+      return JSON.parse(req.body);
+    } catch (error) {
+      const params = new URLSearchParams(req.body);
+      return Object.fromEntries(params.entries());
+    }
+  }
+
+  if (req.rawBody) {
+    const rawText = Buffer.isBuffer(req.rawBody) ? req.rawBody.toString() : String(req.rawBody);
+    if (!rawText.trim()) {
+      return {};
+    }
+
+    try {
+      return JSON.parse(rawText);
+    } catch (error) {
+      const params = new URLSearchParams(rawText);
+      return Object.fromEntries(params.entries());
+    }
+  }
+
+  return {};
+};
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  const { name, email, phone = '', interest = '', message = '' } = req.body || {};
+  const payload = await parseRequestPayload(req);
+  const { name, email, phone = '', interest = '', message = '' } = payload;
 
   if (!name || !email) {
     return res.status(400).json({ message: 'Please provide your name and email address.' });

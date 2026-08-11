@@ -1,9 +1,22 @@
 {
+  "version": 2,
   "cleanUrls": true,
-  "rewrites": [
+  "routes": [
     {
-      "source": "/order",
-      "destination": "/api/order"
+      "src": "/api/order",
+      "dest": "/api/order"
+    },
+    {
+      "src": "/order",
+      "dest": "/api/order"
+    },
+    {
+      "src": "/(.*\\.(css|js|png|jpe?g|gif|svg|webp|ico|avif))",
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }

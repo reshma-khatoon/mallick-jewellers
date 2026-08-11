@@ -34,7 +34,9 @@ if (emailEnabled && emailConfigured) {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname), { index: false, redirect: false }));
+
+const isStaticAssetRequest = (req) => /\.(css|js|png|jpe?g|gif|svg|webp|ico|avif|map)$/.test(req.path);
 
 const writeOrderLog = (orderRequest) => {
   const logLine = `${new Date().toISOString()} | ${orderRequest.name} | ${orderRequest.email} | ${orderRequest.phone} | ${orderRequest.interest} | ${orderRequest.message}\n`;
@@ -96,8 +98,20 @@ const handleOrderRequest = async (req, res) => {
 app.post('/order', handleOrderRequest);
 app.post('/api/order', handleOrderRequest);
 
+app.get('/styles.css', (req, res) => {
+  res.sendFile(path.join(__dirname, 'styles.css'));
+});
+
+app.get('/scripts.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'scripts.js'));
+});
+
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  if (isStaticAssetRequest(req)) {
+    return res.status(404).send('Not found');
+  }
+
+  return res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.listen(port, () => {
