@@ -111,6 +111,12 @@ app.get('*', (req, res) => {
     return res.status(404).send('Not found');
   }
 
+  const page = req.path.replace(/^\/+|\/+$/g, '').replace(/\.html$/, '');
+  const pages = ['about', 'contact', 'gallery', 'instagram'];
+  if (pages.includes(page)) {
+    return res.sendFile(path.join(__dirname, `${page}.html`));
+  }
+
   return res.sendFile(path.join(__dirname, 'index.html'));
 });
 
